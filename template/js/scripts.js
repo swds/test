@@ -32,6 +32,7 @@ $(document).ready(function(){
 						$.each($data, function(index, search) {
 								$('#search_list').append('<li class="list-group-item" onclick="showUsers('+search.id+')">'+search.name+'</li>');
 						});
+						$('#searchName').val(search.name);
 					}else{
 						$('#search_list a').remove();
 						$('#search_list').append('<a href="" class="list-group-item">Пользователь не найден!  =(</a>');
@@ -79,31 +80,20 @@ $(document).ready(function(){
 				alert($data);
 				if ($data != ''){
 					$users.show();
-					$more.show();
-					
 					alert('Выберите в начале фильтры!!');
 				}else{
 					
 				}
-				
 			});
 	});	
-		
-		/* Подгрузка новых заказов по скроллу */
-		/*$(window).scroll(function() {
-			if($(window).scrollTop() + $(window).height() >= $(document).height() && !inProgress) {
-				// alert(startFrom);
-				showUsers('getMore');
-			}
-		});*/
-
-		/* Подгрузка новых заказов по клику */
+		/* Подгрузка новых пользователей по клику */
 		$('#more').click(function(){
 			if (!inProgress) {
 				showUsers('getMore');
 				
 			}
 		});
+		// Обновить таблицу
 		$('#resset').click(function(){
 			if (!inProgress) {
 				showUsers();
@@ -112,10 +102,10 @@ $(document).ready(function(){
 
 	});
 
-	var startFrom = 10; // Начальнй лимит загрузки заказов
+	var startFrom = 10; // Начальнй лимит загрузки пользователей
 	var inProgress = false; // Статус обработки Ajax - чтоб не загружать процесс повторными запросами.
 	
-	/* Подгрузка заказов в таблицу */
+	/* Подгрузка пользователей в таблицу */
 	function showUsers($type){
         var $more = $('#more');
         var $users = $('#users');
@@ -146,25 +136,24 @@ $(document).ready(function(){
 				inProgress = true; // Ставим статус обработки True
 			}
 			}).done(function($data){
-				
 				$('#loading').remove();
 				if ($data != '') {
 						$.each($data, function(index, user) {
-                            $users.append('' +
+							$users.append('' +
 								'<tr>' +
 									'<td>'+user.name+'</td>' +
 									'<td>'+user.qualification+'</td>' +
 									'<td>'+user.city+'</td>' +
 								'</tr>');
 					});
-                    $more.hide();
+					$more.show();
 					if ($type == 'getMore'){
 						startFrom += 10; // Пошле добавления строк в таблицу - добавить лимит +10
 						inProgress = false; // Ставим статус обработки False
 					}
 					
 				}else{
-                    $more.remove();
+					$more.remove();
 				}
 		});
 	}
@@ -207,7 +196,7 @@ $(document).ready(function(){
 			beforeSend: function() {
                 $cities.hide();
                 $cities.after('<span id="loading_cities"><img src="template/images/ajax.gif"> Loading...</span>');
-				inProgress = true; 	// Ставим статус обработки True
+				inProgress = true; 							// Ставим статус обработки True
 			}
 			}).done(function($data){
 				if ($data != '') {
