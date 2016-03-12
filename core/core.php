@@ -21,5 +21,8 @@
 			case "showQualifications":
 				$main->showQualifications();
 			break;
+			case "filters":
+				$main->filters();
+			break;
 		}
 ?>

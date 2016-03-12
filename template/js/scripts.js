@@ -5,9 +5,9 @@ $(document).ready(function(){
 	showCities();
 	showQualifications();
 		$('[data-toggle="tooltip"]').tooltip(); 			
-	var inProgress = false;
+		var inProgress = false;
 
-	$('#searchName').on('input', function () {
+		$('#searchName').on('input', function () {
 		$this = $(this);
 		var min_length = 0;
 		var keyword = $this.val();
@@ -43,18 +43,65 @@ $(document).ready(function(){
 		  inProgress = false; 
 		}
 	});
+	
+	// Применить фильтры.	
+	$('#getFilter').click(function(){
+		var $users = $('#users');
+		var $more = $('#more');
+		var cities = new Array();
+		var i = 0;
+		$('#cities option:selected').each(function( index ) {
+			cities[i] = $(this).val();
+			i++;
+		});
+		var qualifications = new Array();
+		var i = 0;
+		$('#qualifications option:selected').each(function( index ) {
+			qualifications[i] = $(this).val();
+			i++;
+		});
+		
+		$my_data = 'action=filters&qualifications='+qualifications+'&cities='+cities;
+		$.ajax({
+			type: 'POST',
+			url: 'core/core.php',
+			data: $my_data,
+			dataType: 'json',
+			beforeSend: function() {
+                $users.hide();
+                $more.hide();
+                $users.after('<span id="loading"><img src="template/images/ajax.gif"> Loading...</span>');
+				inProgress = true; // Ставим статус обработки True
+			}
+			}).done(function($data){
+				inProgress = false;
+				$('#loading').remove();
+				alert($data);
+				if ($data != ''){
+					$users.show();
+					$more.show();
+					
+					alert('Выберите в начале фильтры!!');
+				}else{
+					
+				}
+				
+			});
+	});	
 		
 		/* Подгрузка новых заказов по скроллу */
-		$(window).scroll(function() {
+		/*$(window).scroll(function() {
 			if($(window).scrollTop() + $(window).height() >= $(document).height() && !inProgress) {
+				// alert(startFrom);
 				showUsers('getMore');
 			}
-		});
+		});*/
 
 		/* Подгрузка новых заказов по клику */
 		$('#more').click(function(){
 			if (!inProgress) {
 				showUsers('getMore');
+				
 			}
 		});
 		$('#resset').click(function(){
@@ -67,24 +114,24 @@ $(document).ready(function(){
 
 	var startFrom = 10; // Начальнй лимит загрузки заказов
 	var inProgress = false; // Статус обработки Ajax - чтоб не загружать процесс повторными запросами.
-
+	
 	/* Подгрузка заказов в таблицу */
 	function showUsers($type){
         var $more = $('#more');
-        var $orders = $('#orders');
+        var $users = $('#users');
         var $search_list = $('#search_list');
-        var $orders_tr = $('#orders tr');
+        var $users_tr = $('#users tr');
         var $my_data;
 
 		if ($type == 'getMore'){
 			$my_data = 'action=showUsers&startFrom='+startFrom;
 		}else if($.isNumeric($type)){
-			$my_data = 'action=showUsers&userID='+$type;
+			$my_data = 'action=showUsers&orderID='+$type;
             $search_list.hide();
-            $orders_tr.remove();
+            $users_tr.remove();
             $more.remove();
 		}else{
-            $orders_tr.remove();
+            $users_tr.remove();
 			$my_data = 'action=showUsers';
 		}
 
@@ -94,15 +141,16 @@ $(document).ready(function(){
 			data: $my_data,
 			dataType: 'json',
 			beforeSend: function() {
-                $more.hide();
+                $more.css("display", "none");
                 $more.after('<span id="loading"><img src="template/images/ajax.gif"> Loading...</span>');
-				inProgress = true; 						// Ставим статус обработки True
+				inProgress = true; // Ставим статус обработки True
 			}
 			}).done(function($data){
+				
+				$('#loading').remove();
 				if ($data != '') {
-                    $('#loading').remove();
 						$.each($data, function(index, user) {
-                            $orders.append('' +
+                            $users.append('' +
 								'<tr>' +
 									'<td>'+user.name+'</td>' +
 									'<td>'+user.qualification+'</td>' +
@@ -111,11 +159,11 @@ $(document).ready(function(){
 					});
                     $more.hide();
 					if ($type == 'getMore'){
-						startFrom += 10; 				// После добавления строк в таблицу - добавить лимит +10
-						inProgress = false; 			// Ставим статус обработки False
+						startFrom += 10; // Пошле добавления строк в таблицу - добавить лимит +10
+						inProgress = false; // Ставим статус обработки False
 					}
+					
 				}else{
-                    $('#loading').remove();
                     $more.remove();
 				}
 		});
@@ -143,7 +191,7 @@ $(document).ready(function(){
 					});
 					
 				}else{
-                   // $('#loading_cities').remove();
+                   $(loading_qualifications).remove();
 				}
 		});
 	}
@@ -159,7 +207,7 @@ $(document).ready(function(){
 			beforeSend: function() {
                 $cities.hide();
                 $cities.after('<span id="loading_cities"><img src="template/images/ajax.gif"> Loading...</span>');
-				inProgress = true; // Ставим статус обработки True
+				inProgress = true; 	// Ставим статус обработки True
 			}
 			}).done(function($data){
 				if ($data != '') {
@@ -170,7 +218,7 @@ $(document).ready(function(){
 					});
 					
 				}else{
-                   // $('#loading_cities').remove();
+                   $('#loading_cities').remove();
 				}
 		});
 	}

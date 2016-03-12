@@ -32,12 +32,34 @@ class Main extends Config {
         $qualifications = $this->db->query($query);
 		return $qualifications;
 	}
+	
 	public function showQualifications(){
 		$qualifications = $this->getQualifications();
 		echo json_encode($qualifications, JSON_UNESCAPED_UNICODE);
 	}
-	public function getUserCities ($userID) {
+	
+	
+	public function filters(){
+		$qualifications = $_POST['qualifications'];
+		$cities = $_POST['cities'];
+		$status = 0;
+		if(!empty($cities)){
+			$where = " cityID in(".$cities.")";
+			$status = 1;
+		}
+			
+		if(!empty($qualifications)){
+			$where = " `qualification_id` IN (".$qualifications.")";
+			$status = 1;
+		}
 		
+		if($status == 1){
+			echo 'Фильтры'; 
+		}else{
+			return false;
+		}
+	}
+	public function getUserCities ($userID) {
 		
 	}
 	
@@ -45,6 +67,7 @@ class Main extends Config {
 		$startFrom = $_POST['startFrom'];
 		$userID = $_POST['userID'];
 		$where = '';
+		
 		if (isset($startFrom)){
 			$limit = ' LIMIT '.$startFrom.', 10';
 		}else{
@@ -57,20 +80,21 @@ class Main extends Config {
 		}
 
 		$query = "SELECT
-                        `id`,
-						`name`,
-						`qualification_id`
-						FROM `users`
-						".$where." ".$limit;
+					`id`,
+					`name`,
+					`qualification_id`
+				FROM `users`
+					".$where." ".$limit;
+						
         $users = $this->db->query($query);
 		$qualifications_temp = $this->getQualifications();
 		$qualifications = array();
+		
 		foreach ($qualifications_temp as $qualification){
 			$qualifications[$qualification['id']]['name'] = $qualification['name'];
 		}
-			$i=0;
+		$i=0;
 		foreach ($users as  $user){
-			
 			$users[$i]['qualification'] .= $qualifications[$user['qualification_id']]['name'];
 			$i++;
 		}

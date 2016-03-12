@@ -40,9 +40,8 @@
                 <div class="col-lg-5" >
 					<div class="col-lg-6" style="padding-right: 30px;">
 					<h4>Города</h4>
-
 						<div class="form-group">
-							<select class="form-control" id="cities" name="cities" multiple>
+							<select class="form-control" id="cities" name="cities[]" multiple>
 						
 							</select>
 						</div>
@@ -50,11 +49,12 @@
 					<div class="col-lg-6" style="padding-left: 30px;">
 					<h4>Образование</h4>
 						<div class="form-group">
-							<select class="form-control" id="qualifications" name="qualifications"  multiple>
+							<select class="form-control" id="qualifications" name="qualifications[]"  multiple>
 						
 							</select>
 						</div>
 					</div>
+					<button class="btn btn-primary btn-sm" id="getFilter">Применить фильтер</button>
                 </div>
                 <div class="col-lg-7">
                     <table class="table table-striped">
@@ -63,7 +63,7 @@
                             <th>Образование</th>
                             <th>Город</th>
                         </thead>
-                        <tbody id="orders">
+                        <tbody id="users">
 
                         </tbody>
                     </table>
