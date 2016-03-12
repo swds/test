@@ -126,7 +126,7 @@ $(document).ready(function(){
 		if ($type == 'getMore'){
 			$my_data = 'action=showUsers&startFrom='+startFrom;
 		}else if($.isNumeric($type)){
-			$my_data = 'action=showUsers&orderID='+$type;
+			$my_data = 'action=showUsers&userID='+$type;
             $search_list.hide();
             $users_tr.remove();
             $more.remove();
